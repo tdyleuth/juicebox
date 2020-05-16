@@ -35,7 +35,7 @@ async function createUser({
   }
 
 
-  async function updateUser(id, fields = {}) {
+async function updateUser(id, fields = {}) {
     // build the set string
     const setString = Object.keys(fields).map(
       (key, index) => `"${ key }"=$${ index + 1 }`
@@ -61,7 +61,7 @@ async function createUser({
   }
 
 
-  async function createPost( {
+async function createPost( {
     authorId,
     title,
     content
@@ -81,7 +81,7 @@ async function createUser({
   }
 
 
-  async function updatePost(id, fields = {}) {
+async function updatePost(id, fields = {}) {
    
     const setString = Object.keys(fields).map(
       (key, index) => `"${ key }"=$${ index + 1 }`
@@ -104,7 +104,6 @@ async function createUser({
       throw error;
     }
   }
-
 
 async function getAllPosts() {
   
@@ -158,6 +157,41 @@ async function getUserById(userId) {
 }
 
 
+  
+async function createTags(tagList) {
+
+  if (tagList.length === 0) { 
+    return; 
+  }
+
+  // need something like: $1), ($2), ($3 
+  const insertValues = tagList.map(
+    (_, index) => `$${index + 1}`).join('), (');
+  // then we can use: (${ insertValues }) in our string template
+
+  // need something like $1, $2, $3
+  const selectValues = tagList.map(
+    (_, index) => `$${index + 1}`).join(', ');
+  // then we can use (${ selectValues }) in our string template
+
+  try {
+ 
+    const { rows } = await client.query(`
+
+    INSERT INTO tags(name)
+    VALUES (${ insertValues })
+    ON CONFLICT (SELECT * FROM tags
+    WHERE name
+    IN (${ selectValues })) DO NOTHING;
+
+   `)
+
+    return rows;
+
+  } catch (error) {
+    throw error;
+  }
+}
 
 
 module.exports = { 
