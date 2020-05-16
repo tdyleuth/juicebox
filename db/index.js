@@ -61,23 +61,25 @@ async function updateUser(id, fields = {}) {
   }
 
 
-async function createPost( {
+async function createPost({
     authorId,
     title,
-    content
+    content,
+    tags = [] // this is new
   }) {
-    try { 
-    const { rows: [ posts ] } = await client.query(`
-    INSERT INTO posts("authorId", title, content)
-    VALUES($1, $2, $3)
-    RETURNING *;
-    `, [authorId, title, content])
+    try {
+      const { rows: [ post ] } = await client.query(`
+        INSERT INTO posts("authorId", title, content) 
+        VALUES($1, $2, $3)
+        RETURNING *;
+      `, [authorId, title, content]);
   
-    return posts;
-      
+      const tagList = await createTags(tags);
+  
+      return await addTagsToPost(post.id, tagList);
     } catch (error) {
-    throw error;
-     }
+      throw error;
+    }
   }
 
 

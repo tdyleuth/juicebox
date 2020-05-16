@@ -113,7 +113,6 @@ async function createTables() {
   
   `);
 
-     
 
     } catch (error) {
       throw error;
@@ -121,7 +120,7 @@ async function createTables() {
   }
 
   
-  async function createInitialUsers() {
+async function createInitialUsers() {
     try {
       console.log("Starting to create users...");
   
@@ -139,58 +138,53 @@ async function createTables() {
     }
   }
 
-  async function createInitialPosts() {
+
+async function createInitialPosts() {
     try {
-      const [albert, sandra, glamgal] = await getAllUsers();
-      console.log("Starting to create posts...");
-      await createPost({
-        authorId: albert.id,
-        title: "First Post",
-        content: "This is my first post. I hope I love writing blogs as much as I love writing them."
-      });
-
-      await createPost({
-        authorId: sandra.id,
-        title: "First Post",
-        content: "This is my first post. I hope I love writing blogs as much as I love writing them."
-      });
-
-      await createPost({
-        authorId: glamgal.id,
-        title: "First Post",
-        content: "This is my first post. I hope I love writing blogs as much as I love writing them."
-      });
+     const [albert, sandra, glamgal] = await getAllUsers();
     
-      console.log("Finished creating posts!");
-    } catch (error) {
-      throw error;
-    }
-  }
+   console.log("Starting to create posts...");
+   await createPost({
+     authorId: albert.id,
+     title: "First Post",
+     content: "This is my first post. I hope I love writing blogs as much as I love writing them.",
+    tags: ["#happy", "#youcandoanything"]
+        });
+    
+    await createPost({
+    authorId: sandra.id,
+    title: "How does this work?",
+    content: "Seriously, does this even do anything?",
+    tags: ["#happy", "#worst-day-ever"]
+        });
+    
+    await createPost({
+    authorId: glamgal.id,
+    title: "Living the Glam Life",
+    content: "Do you even? I swear that half of you are posing.",
+    tags: ["#happy", "#youcandoanything", "#canmandoeverything"]
+   });
 
-  async function createInitialTags() {
-    try {
-      console.log("Starting to create tags...");
-  
-      const [happy, sad, inspo, catman] = await createTags([
-        '#happy', 
-        '#worst-day-ever', 
-        '#youcandoanything',
-        '#catmandoeverything'
-      ]);
-  
-      const [postOne, postTwo, postThree] = await getAllPosts();
-  
-      await addTagsToPost(postOne.id, [happy, inspo]);
-      await addTagsToPost(postTwo.id, [sad, inspo]);
-      await addTagsToPost(postThree.id, [happy, catman, inspo]);
-  
-      console.log("Finished creating tags!");
+  console.log("Finished creating posts!");
     } catch (error) {
-      console.log("Error creating tags!");
-      throw error;
+       console.log("Error creating posts!");
+        throw error;
+      }
     }
-  }
-
+    
+async function rebuildDB() {
+     try {
+        client.connect();
+    
+        await dropTables();
+        await createTables();
+        await createInitialUsers();
+        await createInitialPosts();
+      } catch (error) {
+        console.log("Error during rebuildDB")
+        throw error;
+      }
+    }
 
 
 async function rebuildDB() {
@@ -201,15 +195,12 @@ async function rebuildDB() {
     await createTables();
     await createInitialUsers();
     await createInitialPosts();
-    await createInitialTags();
 
   } catch (error) {
     console.log("Error during rebuildDB")
     throw error;
   }
 }
-
-
 
   rebuildDB()
   .then(testDB)
