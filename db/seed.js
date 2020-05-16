@@ -10,7 +10,8 @@ const {
     getUserById,
     getPostsByUser,
     createTags,
-    addTagsToPost
+    addTagsToPost,
+    getPostsByTagName
     
   } = require('./index');
 
@@ -140,6 +141,10 @@ async function createInitialUsers() {
       const glagal = await createUser({ username: 'glamgal', password: 'soglam', name: 'Joshua', location: 'Upper East Side' })
   
       console.log(albert, sandra, glagal);
+
+      console.log("Calling getPostsByTagName with #happy");
+      const postsWithHappy = await getPostsByTagName("#happy");
+      console.log("Result:", postsWithHappy);
    
       console.log("Finished creating users!");
     } catch(error) {

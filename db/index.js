@@ -83,13 +83,13 @@ async function createPost({
   }
 
 
-  async function updatePost(postId, fields = {}) {
+async function updatePost(postId, fields = {}) {
     // read off the tags & remove that field 
     const { tags } = fields; // might be undefined
     delete fields.tags;
   
     // build the set string
-    const setString = Object.keys(fields).map(
+  const setString = Object.keys(fields).map(
       (key, index) => `"${ key }"=$${ index + 1 }`
     ).join(', ');
   
@@ -288,6 +288,24 @@ async function getPostById(postId) {
   }
 }
 
+async function getPostsByTagName(tagName) {
+  try {
+    const { rows: postIds } = await client.query(`
+      SELECT posts.id
+      FROM posts
+      JOIN post_tags ON posts.id=post_tags."postId"
+      JOIN tags ON tags.id=post_tags."tagId"
+      WHERE tags.name=$1;
+    `, [tagName]);
+
+    return await Promise.all(postIds.map(
+      post => getPostById(post.id)
+    ));
+  } catch (error) {
+    throw error;
+  }
+} 
+
 
 
 module.exports = { 
@@ -304,6 +322,7 @@ module.exports = {
     createPostTag,
     addTagsToPost,
     getPostById,
+    getPostsByTagName,
 
 }
 
