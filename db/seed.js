@@ -84,16 +84,16 @@ async function dropTables() {
   }
 
 
-async function createTables() {
+  async function createTables() {
   try {
     await client.query(`
        CREATE TABLE users (
         id SERIAL PRIMARY KEY,
-         username varchar(255) UNIQUE NOT NULL,
-          password varchar(255) NOT NULL,
-          name varchar(255) NOT NULL,
-          location varchar(255),
-          active BOOLEAN DEFAULT true
+        username varchar(255) UNIQUE NOT NULL,
+        password varchar(255) NOT NULL,
+        name varchar(255) NOT NULL,
+        location varchar(255),
+        active BOOLEAN DEFAULT true
         );
       `);
 
@@ -187,19 +187,6 @@ async function createInitialPosts() {
       }
     }
     
-async function rebuildDB() {
-     try {
-        client.connect();
-    
-        await dropTables();
-        await createTables();
-        await createInitialUsers();
-        await createInitialPosts();
-      } catch (error) {
-        console.log("Error during rebuildDB")
-        throw error;
-      }
-    }
 
 
 async function rebuildDB() {
