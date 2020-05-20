@@ -188,7 +188,10 @@ async function createInitialPosts() {
       }
     }
     
+<<<<<<< HEAD
 
+=======
+>>>>>>> 47a943005df1d82a786bf7ccc3df03026cca9345
 
 async function rebuildDB() {
   try {
