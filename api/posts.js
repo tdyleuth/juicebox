@@ -1,6 +1,50 @@
 const express = require('express');
 const postsRouter = express.Router();
-const { getAllPosts} = require('../db');
+const { getAllPosts, createPost, getPostById, updatePost } = require('../db');
+const { requireUser } = require('./utils');
+
+
+postsRouter.post('/', requireUser, async (req, res, next) => {
+
+  const { title , content, tags = "" } = req.body;
+
+  const tagsArr = tags.trim().split(/\s+/)
+  const postData = {};
+  
+  if(tagsArr.length) {
+
+    postData.tags = tagsArr;
+  }
+
+  try {
+    
+    authorId = req.user.id;
+
+    postData.title = title;
+    postData.authorId = authorId;
+    postData.content = content;
+
+    const post = await createPost(postData);
+
+    if(post) {
+
+      res.send({ post });
+    }
+    else {
+
+      next({ name:'NoPostRetrieved', message: 'No post Retrieved!'})
+      
+    }
+
+  }
+
+  catch ({ name, message }) {
+    next({ name, message });
+  }
+
+
+});
+
 
 postsRouter.use((req, res, next) => {
   console.log("A request is being made to /posts");
@@ -17,6 +61,45 @@ postsRouter.get('/', async (req, res) => {
     res.send({
         posts
     });
+});
+
+postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
+
+  const { postId } = req.params;
+  const { title, content, tags } = req.body;
+
+  const updateFields = {};
+
+  if (tags && tags.length > 0 ) {
+    updateFields.tags = tags.trim().split(/\s+/);
+  }
+  
+  if (title) {
+    updateFields.title = title;
+  }
+
+  if (content) {
+    updateFields.content = content;
+  }
+
+  try {
+    const originalPost = await getPostById(postId);
+
+    if (originalPost.author.id === req.user.id ) {
+      const updatedPost = await updatePost(postId, updateFields);
+      res.send({ post: updatedPost})
+    }
+    else{
+      next({
+        name: 'UnauthorizedUserError',
+        message: 'You cannot update a post that is not yours'
+      })
+    }
+  }
+    catch ({ name, message }) {
+
+      next({ name, message });
+    }     
 });
 
 

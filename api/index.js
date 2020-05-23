@@ -1,9 +1,8 @@
 
+require('dotenv').config();
+
 const express = require('express');
 const apiRouter = express.Router();
-
-
-require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
 const { getUserById } = require('../db');
