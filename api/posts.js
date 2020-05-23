@@ -19,6 +19,7 @@ postsRouter.post('/', requireUser, async (req, res, next) => {
   try {
     
     authorId = req.user.id;
+    
 
     postData.title = title;
     postData.authorId = authorId;
@@ -101,7 +102,6 @@ postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
       next({ name, message });
     }     
 });
-
 
 
 module.exports = postsRouter;
