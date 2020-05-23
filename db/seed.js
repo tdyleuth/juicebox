@@ -11,7 +11,7 @@ const {
     getPostsByUser,
     createTags,
     addTagsToPost,
-    getPostsByTagName.
+    getPostsByTagName,
     getAllTags,
     getUserByUsername,
     
